@@ -50,7 +50,7 @@ type Config struct {
 	PodPort   string
 }
 
-func New(conf Config) (*K8sPool, error) {
+func New(conf Config) (*Pool, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func New(conf Config) (*K8sPool, error) {
 	return pool, pool.start()
 }
 
-func (e *K8sPool) start() error {
+func (e *Pool) start() error {
 
 	e.informer = cache.NewSharedIndexInformer(
 		&cache.ListWatch{
@@ -128,7 +128,7 @@ func (e *K8sPool) start() error {
 	return nil
 }
 
-func (e *K8sPool) updatePeers() {
+func (e *Pool) updatePeers() {
 	e.log.Debug("Fetching peer list from endpoints API")
 	var peers []PeerInfo
 	for _, obj := range e.informer.GetStore().List() {
@@ -159,7 +159,7 @@ func (e *K8sPool) updatePeers() {
 	e.conf.OnUpdate(peers)
 }
 
-func (e *K8sPool) Close() {
+func (e *Pool) Close() {
 	close(e.done)
 }
 
