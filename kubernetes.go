@@ -33,15 +33,15 @@ type PeerInfo struct {
 
 type UpdateFunc func([]PeerInfo)
 
-type K8sPool struct {
+type Pool struct {
 	informer cache.SharedIndexInformer
 	client   *kubernetes.Clientset
 	log      logger
-	conf     K8sPoolConfig
+	conf     Config
 	done     chan struct{}
 }
 
-type K8sPoolConfig struct {
+type Config struct {
 	Logger    logger
 	OnUpdate  UpdateFunc
 	Namespace string
@@ -50,7 +50,7 @@ type K8sPoolConfig struct {
 	PodPort   string
 }
 
-func NewK8sPool(conf K8sPoolConfig) (*K8sPool, error) {
+func New(conf Config) (*K8sPool, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func NewK8sPool(conf K8sPoolConfig) (*K8sPool, error) {
 		return nil, err
 	}
 
-	pool := &K8sPool{
+	pool := &Pool{
 		done:   make(chan struct{}),
 		log:    conf.Logger,
 		client: client,
